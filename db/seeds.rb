@@ -1,9 +1,14 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+require 'httparty'
+
+url = ENV['SCHOOL_CODE_API_URL']
+header = { Authorization: "Bearer #{ENV['SCHOOL_CODE_API_KEY']}", Accept: "application/json" }
+response = HTTParty.get(url, headers: header)
+data = JSON.parse(response.body)
+school_data = data['schools']['data']
+
+school_data.each do |item|
+    model_params = {
+        name: item['school_name'],
+      }
+    School.create!(model_params)
+end
