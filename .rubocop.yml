@@ -1,0 +1,28 @@
+require:
+  - rubocop-rails
+
+AllCops:
+  # 新ルールを有効化
+  NewCops: enable
+  # 何のルールに引っかかったか表示する
+  DisplayCopNames: true
+  # 除外するディレクトリ（自動生成されるファイル）
+  Exclude:
+    - "vendor/**/*"
+    - "db/**/*"
+    - "config/**/*"
+    - "bin/*"
+    - "node_modules/**/*"
+
+### ルールのカスタマイズ
+
+# クラスにコメントを残さなくても良い
+Style/Documentation:
+  Enabled: false
+
+# 文字列のfreeze（Ruby3からは自動でfreezeされるので要らない）
+Style/FrozenStringLiteralComment:
+  Enabled: false
+# デフォルトのシングルクォートを使うことにしたので、ダブルの所は修正される
+# Style/StringLiterals:
+#   Enabled: false
