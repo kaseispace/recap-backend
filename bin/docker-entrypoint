@@ -1,12 +1,12 @@
 #!/bin/bash -e
 
 # If running the rails server then create or migrate existing database
-# if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
-#   # ./bin/rails db:prepare
-#   # 初回でデプロイ時のみ
-#   # ./bin/rails db:seed
+if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
+  ./bin/rails db:prepare
+  # 初回でデプロイ時のみ
+  # ./bin/rails db:seed
 
-#   # ./bin/rails db:migrate
-# fi
+  # ./bin/rails db:migrate
+fi
 
 exec "${@}"
