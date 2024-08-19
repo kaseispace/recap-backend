@@ -28,5 +28,13 @@ module Myapp
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+     # タイムゾーン設定を日本にする
+     config.time_zone = "Asia/Tokyo"
+     config.active_record.default_timezone = :local
+     config.i18n.default_locale = :ja
+
+     # lib配下のファイルを読み込み
+     config.autoload_paths += %W(#{config.root}/lib)
   end
 end
