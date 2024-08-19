@@ -26,3 +26,11 @@ Style/FrozenStringLiteralComment:
 # デフォルトのシングルクォートを使うことにしたので、ダブルの所は修正される
 # Style/StringLiterals:
 #   Enabled: false
+
+# メソッドの複雑さチェック
+Metrics/AbcSize:
+  Max: 40
+
+# メソッドの行数が多すぎないかチェック
+Metrics/MethodLength:
+  Max: 30
