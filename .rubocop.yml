@@ -34,3 +34,7 @@ Metrics/AbcSize:
 # メソッドの行数が多すぎないかチェック
 Metrics/MethodLength:
   Max: 30
+
+# クラスの行数をチェックを無効
+Metrics/ClassLength:
+  Enabled: false
