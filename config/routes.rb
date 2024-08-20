@@ -5,8 +5,14 @@ Rails.application.routes.draw do
   namespace "api" do
     namespace "v1" do
       resources :schools, only: [:index, :show]
-      resources :users, only: [:index, :show, :create, :destroy], param: :uid
+      resources :users, only: [:create, :destroy], param: :uid
       resources :user_schools, only: [:index, :create]
+
+      resources :courses, only: [:index, :create, :update, :destroy] do
+        member do
+          get 'joined_users'
+        end
+      end
     end
   end
 end
