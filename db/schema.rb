@@ -10,9 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_19_005513) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_20_003432) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "courses", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "teacher_name", null: false
+    t.string "day_of_week", null: false
+    t.string "course_time", null: false
+    t.string "uuid", null: false
+    t.string "course_code", null: false
+    t.bigint "created_by_id", null: false
+    t.bigint "school_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_courses_on_created_by_id"
+    t.index ["name", "created_by_id"], name: "index_courses_on_name_and_created_by_id", unique: true
+    t.index ["school_id", "course_code"], name: "index_courses_on_school_id_and_course_code", unique: true
+    t.index ["school_id"], name: "index_courses_on_school_id"
+  end
 
   create_table "schools", force: :cascade do |t|
     t.string "name", null: false
@@ -39,6 +56,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_19_005513) do
     t.index ["uid"], name: "index_users_on_uid", unique: true
   end
 
+  add_foreign_key "courses", "schools"
+  add_foreign_key "courses", "users", column: "created_by_id"
   add_foreign_key "user_schools", "schools"
   add_foreign_key "user_schools", "users"
 end
