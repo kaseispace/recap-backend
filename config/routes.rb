@@ -6,7 +6,7 @@ Rails.application.routes.draw do
     namespace "v1" do
       resources :schools, only: [:index, :show]
       resources :users, only: [:index, :show, :create, :destroy], param: :uid
-      resources :user_schools, only: [:index, :show]
+      resources :user_schools, only: [:index, :create]
     end
   end
 end
