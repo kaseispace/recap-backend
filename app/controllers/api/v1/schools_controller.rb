@@ -1,7 +1,7 @@
 module Api
   module V1
     class SchoolsController < ApplicationController
-      # skip_before_action :authenticate, only: [:index, :show]
+      skip_before_action :authenticate, only: %i[index show]
 
       # 学校一覧
       def index
