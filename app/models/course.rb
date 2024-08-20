@@ -6,6 +6,7 @@ class Course < ApplicationRecord
   belongs_to :school
   has_many :user_courses, dependent: :destroy
   has_many :users, through: :user_courses
+  has_many :announcements, dependent: :destroy
 
   validates :name, presence: true
   validates :teacher_name, presence: true
