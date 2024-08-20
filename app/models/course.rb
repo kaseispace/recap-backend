@@ -4,6 +4,8 @@ class Course < ApplicationRecord
 
   belongs_to :created_by, class_name: 'User'
   belongs_to :school
+  has_many :user_courses, dependent: :destroy
+  has_many :users, through: :user_courses
 
   validates :name, presence: true
   validates :teacher_name, presence: true
