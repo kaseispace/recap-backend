@@ -19,13 +19,23 @@ Rails.application.routes.draw do
           get 'joined_courses'
         end
       end
-
-       resources :announcements, only: [:create, :update, :destroy] do
+      
+      resources :announcements, only: [:create, :update, :destroy] do
         collection do
           get 'student_announcements'
           get 'teacher_announcements'
         end
-       end
+      end
+      
+      resources :prompts, only: [:create, :update, :destroy] do
+        collection do
+          get 'teacher_prompts'
+          get 'student_prompt'
+        end
+        member do
+          patch 'activate_prompt'
+        end
+      end
     end
   end
 end
