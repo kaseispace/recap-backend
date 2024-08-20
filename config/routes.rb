@@ -13,6 +13,12 @@ Rails.application.routes.draw do
           get 'joined_users'
         end
       end
+
+      resources :user_courses, only: [:create, :destroy], param: :uuid do
+        collection do
+          get 'joined_courses'
+        end
+      end
     end
   end
 end
