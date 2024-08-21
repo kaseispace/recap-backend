@@ -38,3 +38,15 @@ Metrics/MethodLength:
 # クラスの行数をチェックを無効
 Metrics/ClassLength:
   Enabled: false
+
+# i18nのチェックを無効
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+# メソッド内の複雑性チェック
+Metrics/PerceivedComplexity:
+  Max: 10
+
+# 循環的複雑度チェック
+Metrics/CyclomaticComplexity:
+  Max: 10
