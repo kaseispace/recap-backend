@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_20_044822) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_20_123830) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -20,6 +20,18 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_044822) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_id"], name: "index_announcements_on_course_id"
+  end
+
+  create_table "course_dates", force: :cascade do |t|
+    t.bigint "course_id", null: false
+    t.string "course_number", null: false
+    t.string "course_date", null: false
+    t.boolean "is_reflection", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id", "course_date"], name: "index_course_dates_on_course_id_and_course_date", unique: true
+    t.index ["course_id", "course_number"], name: "index_course_dates_on_course_id_and_course_number", unique: true
+    t.index ["course_id"], name: "index_course_dates_on_course_id"
   end
 
   create_table "courses", force: :cascade do |t|
@@ -91,6 +103,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_044822) do
   end
 
   add_foreign_key "announcements", "courses"
+  add_foreign_key "course_dates", "courses"
   add_foreign_key "courses", "schools"
   add_foreign_key "courses", "users", column: "created_by_id"
   add_foreign_key "prompt_questions", "prompts"
