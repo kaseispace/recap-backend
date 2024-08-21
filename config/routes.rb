@@ -36,6 +36,16 @@ Rails.application.routes.draw do
           patch 'activate_prompt'
         end
       end
+
+      resources :course_dates, only: [:create, :update, :destroy] do
+        collection do
+          get 'teacher_course_dates'
+          get 'student_course_dates'
+        end
+        member do
+          patch 'reflection_status'
+        end
+      end
     end
   end
 end
