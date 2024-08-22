@@ -46,6 +46,14 @@ Rails.application.routes.draw do
           patch 'reflection_status'
         end
       end
+
+      resources :reflections, only: [:create, :update] do
+        collection do
+          get 'student_reflections'
+          get 'all_student_reflection_status'
+          get 'all_student_reflections'
+        end
+      end
     end
   end
 end
