@@ -1,7 +1,7 @@
 module Api
   module V1
     class CoursesController < ApplicationController
-      before_action :set_user, only: %i[index create update destroy]
+      before_action :set_user, only: %i[index joined_users create update destroy]
 
       def index
         courses = Course.where(created_by_id: @user.id)
@@ -10,9 +10,13 @@ module Api
 
       # コースに参加しているユーザー一覧
       def joined_users
-        course = Course.find(params[:id])
-        users = course.users
-        render json: users.as_json(only: [:name])
+        course = Course.find_by(id: params[:id], created_by_id: @user.id)
+        if course
+          joined_users = course.users
+          render json: joined_users.as_json(only: %i[id name])
+        else
+          render json: { error: { messages: ['あなたは授業の作成者ではないので受講生一覧を取得できません'] } }, status: :forbidden
+        end
       end
 
       def create
