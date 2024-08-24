@@ -12,7 +12,6 @@ AllCops:
     - "db/**/*"
     - "config/**/*"
     - "bin/*"
-    - "node_modules/**/*"
 
 ### ルールのカスタマイズ
 
