@@ -30,12 +30,15 @@ module Api
         return render json: { error: { messages: ['授業日が存在しませんでした。'] } }, status: :not_found unless course_date
 
         course = Course.find_by(id: course_date.course_id, created_by_id: @user.id)
-        return render json: { error: { messages: ['コースの作成者でないため、授業日を編集できません。'] } }, status: :forbidden unless course
+        unless course
+          return render json: { error: { messages: ['コースの作成者でないため、振り返りのステータスを編集できません。'] } },
+                        status: :forbidden
+        end
 
         if course_date.update(is_reflection: !course_date.is_reflection)
           render json: course_date
         else
-          render json: { error: { messages: course_date.errors.full_messages } }, status: :unprocessable_entity
+          render json: { error: { messages: ['振り返りのステータスを更新できませんでした。'] } }, status: :unprocessable_entity
         end
       end
 
@@ -53,7 +56,7 @@ module Api
               course_date.errors.details[:course_date].any? { |error| error[:error] == :taken }
           render json: { error: { messages: course_date.errors.messages } }, status: :conflict
         else
-          render json: { error: { messages: course_date.errors.full_messages } }, status: :unprocessable_entity
+          render json: { error: { messages: ['授業日を登録できませんでした。'] } }, status: :unprocessable_entity
         end
       end
 
