@@ -1,7 +1,7 @@
 module Api
   module V1
     class ReflectionsController < ApplicationController
-      before_action :set_user, only: %i[student_reflections create update]
+      before_action :set_user, only: %i[student_reflections check_reflection_on_date create update]
 
       def student_reflections
         user_course = UserCourse.joins(:course).find_by(user_id: @user.id, 'courses.uuid' => params[:uuid])
@@ -74,6 +74,17 @@ module Api
         render json: { error: { messages: ['予期しないエラーが発生しました。'] } }, status: :unprocessable_entity
       end
 
+      def check_reflection_on_date
+        course = Course.find_by(id: check_reflection_params[:id], created_by_id: @user.id)
+        if course
+          reflection = Reflection.find_by(course_id: course.id,
+                                          course_date_id: check_reflection_params[:course_date_id])
+          render json: reflection.present?
+        else
+          render json: { error: { messages: ['あなたは授業の作成者ではありません。'] } }, status: :forbidden
+        end
+      end
+
       def create
         user_course = UserCourse.joins(:course).find_by(user_id: @user.id, 'courses.uuid' => params[:uuid])
         return render json: { error: { messages: ['あなたの所属情報が見つかりませんでした。'] } }, status: :not_found unless user_course
@@ -131,6 +142,10 @@ module Api
       def reflection_history_params
         # reflectionキーのみを許可
         params.require(:reflection_history)
+      end
+
+      def check_reflection_params
+        params.permit(:id, :course_date_id)
       end
     end
   end
