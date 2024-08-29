@@ -10,13 +10,11 @@ module Api
 
       # コースに参加しているユーザー一覧
       def joined_users
-        course = Course.find_by(id: params[:id], created_by_id: @user.id)
-        if course
-          joined_users = course.users
-          render json: joined_users.as_json(only: %i[id name])
-        else
-          render json: { error: { messages: ['あなたは授業の作成者ではないので受講生一覧を取得できません'] } }, status: :forbidden
-        end
+        course = Course.find_by(uuid: params[:uuid], created_by_id: @user.id)
+        return render json: { error: { messages: ['授業が存在しませんでした。'] } }, status: :not_found unless course
+
+        joined_users = course.users
+        render json: joined_users.as_json(only: %i[id name])
       end
 
       def create
@@ -32,30 +30,26 @@ module Api
       end
 
       def update
-        course = Course.find(params[:id])
-        if course.created_by_id == @user.id
-          if course.update(course_params)
-            render json: course
-          elsif course.errors.details[:name].any? { |error| error[:error] == :taken }
-            render json: { error: { messages: ['既に存在する授業名です。'] } }, status: :conflict
-          else
-            render json: { error: { messages: ['コースの更新に失敗しました。'] } }, status: :unprocessable_entity
-          end
+        course = Course.find_by(uuid: params[:uuid], created_by_id: @user.id)
+        return render json: { error: { messages: ['授業が存在しませんでした。'] } }, status: :not_found unless course
+
+        if course.update(course_params)
+          render json: course
+        elsif course.errors.details[:name].any? { |error| error[:error] == :taken }
+          render json: { error: { messages: ['既に存在する授業名です。'] } }, status: :conflict
         else
-          render json: { error: { messages: ['あなたはこのコースの作成者ではないため、編集できません。'] } }, status: :forbidden
+          render json: { error: { messages: ['授業の更新に失敗しました。'] } }, status: :unprocessable_entity
         end
       end
 
       def destroy
-        course = Course.find_by(id: params[:id])
-        if course.created_by_id == @user.id
-          if course.destroy
-            head :no_content
-          else
-            render json: { error: { messages: ['コースの削除に失敗しました。'] } }, status: :unprocessable_entity
-          end
+        course = Course.find_by(uuid: params[:uuid], created_by_id: @user.id)
+        return render json: { error: { messages: ['授業が存在しませんでした。'] } }, status: :not_found unless course
+
+        if course.destroy
+          head :no_content
         else
-          render json: { error: { messages: ['あなたはこのコースの作成者ではないため、削除できません。'] } }, status: :forbidden
+          render json: { error: { messages: ['授業の削除に失敗しました。'] } }, status: :unprocessable_entity
         end
       end
 
