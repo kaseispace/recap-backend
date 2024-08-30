@@ -8,7 +8,7 @@ Rails.application.routes.draw do
       resources :users, only: [:create, :destroy], param: :uid
       resources :user_schools, only: [:index, :create]
 
-      resources :courses, only: [:index, :create, :update, :destroy], param: :uuid do
+      resources :courses, only: [:index, :show, :create, :update, :destroy], param: :uuid do
         member do
           get 'joined_users'
         end
