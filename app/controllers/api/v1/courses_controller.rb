@@ -1,11 +1,16 @@
 module Api
   module V1
     class CoursesController < ApplicationController
-      before_action :set_user, only: %i[index joined_users create update destroy]
+      before_action :set_user, only: %i[index show joined_users create update destroy]
 
       def index
         courses = Course.where(created_by_id: @user.id)
         render json: courses
+      end
+
+      def show
+        course = Course.find_by(uuid: params[:uuid], created_by_id: @user.id)
+        render json: course
       end
 
       # コースに参加しているユーザー一覧
