@@ -14,11 +14,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :user_courses, only: [:create, :destroy], param: :uuid do
-        collection do
-          get 'joined_courses'
-        end
-      end
+      resources :user_courses, only: [:index, :show, :create, :destroy], param: :uuid
       
       resources :announcements, only: [:create, :update, :destroy] do
         collection do
