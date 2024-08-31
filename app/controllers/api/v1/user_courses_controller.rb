@@ -1,12 +1,16 @@
 module Api
   module V1
     class UserCoursesController < ApplicationController
-      before_action :set_user, only: %i[joined_courses create destroy]
+      before_action :set_user, only: %i[index show create destroy]
 
-      # 学生が参加しているコース一覧
-      def joined_courses
+      def index
         courses = @user.courses
         render json: courses.as_json(only: %i[name teacher_name day_of_week course_time uuid])
+      end
+
+      def show
+        course = @user.courses.find_by(uuid: params[:uuid])
+        render json: course.as_json(only: %i[name teacher_name day_of_week course_time uuid])
       end
 
       def create
