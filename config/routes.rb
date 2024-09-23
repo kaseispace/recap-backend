@@ -51,6 +51,12 @@ Rails.application.routes.draw do
           get 'check_reflection_on_date'
         end
       end
+
+      resources :feedbacks,  only: [:create] do
+        collection do
+          get 'student_feedbacks'
+        end
+      end
     end
   end
 end
