@@ -10,6 +10,7 @@ class Course < ApplicationRecord
   has_many :prompts, dependent: :destroy
   has_many :course_dates, dependent: :destroy
   has_many :reflections, dependent: :destroy
+  has_many :feedbacks, dependent: :destroy
 
   validates :name, presence: true
   validates :teacher_name, presence: true
