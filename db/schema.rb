@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_21_055816) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_23_051500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -49,6 +49,18 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_21_055816) do
     t.index ["name", "created_by_id"], name: "index_courses_on_name_and_created_by_id", unique: true
     t.index ["school_id", "course_code"], name: "index_courses_on_school_id_and_course_code", unique: true
     t.index ["school_id"], name: "index_courses_on_school_id"
+  end
+
+  create_table "feedbacks", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "course_id", null: false
+    t.bigint "course_date_id", null: false
+    t.string "comment", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_date_id"], name: "index_feedbacks_on_course_date_id"
+    t.index ["course_id"], name: "index_feedbacks_on_course_id"
+    t.index ["user_id"], name: "index_feedbacks_on_user_id"
   end
 
   create_table "prompt_questions", force: :cascade do |t|
@@ -120,6 +132,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_21_055816) do
   add_foreign_key "course_dates", "courses"
   add_foreign_key "courses", "schools"
   add_foreign_key "courses", "users", column: "created_by_id"
+  add_foreign_key "feedbacks", "course_dates"
+  add_foreign_key "feedbacks", "courses"
+  add_foreign_key "feedbacks", "users"
   add_foreign_key "prompt_questions", "prompts"
   add_foreign_key "prompts", "courses"
   add_foreign_key "reflections", "course_dates"
