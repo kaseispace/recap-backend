@@ -7,7 +7,7 @@ module Api
         user_course = UserCourse.joins(:course).find_by(user_id: @user.id, 'courses.uuid' => params[:uuid])
         if user_course
           reflections = Reflection.where(user_id: @user.id,
-                                         course_id: user_course.course_id).includes(:course_date)
+                                         course_id: user_course.course_id).includes(:course_date).order(:created_at)
 
           reflections_with_course_dates = reflections.group_by(&:course_date).map do |course_date, grouped_reflections|
             course_date.as_json(only: %i[id course_id course_number
@@ -59,7 +59,8 @@ module Api
         reflection_dates_by_user = users.map do |user|
           user_reflections = user.reflections.select do |reflection|
             reflection.course_date.course_id == course.id
-          end
+          end.sort_by(&:created_at)
+
           user_reflection_dates = user_reflections.group_by(&:course_date).map do |date, reflections|
             course_date_hash = date.attributes
             course_date_hash['reflections'] = reflections
