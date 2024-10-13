@@ -4,6 +4,8 @@ require:
 AllCops:
   # 新ルールを有効化
   NewCops: enable
+  # 提案メッセージの非表示
+  SuggestExtensions: false
   # 何のルールに引っかかったか表示する
   DisplayCopNames: true
   # 除外するディレクトリ（自動生成されるファイル）
