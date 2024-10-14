@@ -16,8 +16,10 @@ module Api
 
       def destroy
         user = User.find_by(uid: params[:uid])
+        return render json: { error: { messages: ['ユーザーが存在しませんでした。'] } }, status: :not_found unless user
+
         if user.destroy
-          render json: { messages: ["#{payload_uid}のユーザーを削除しました。"] }
+          head :no_content
         else
           render json: { error: { messages: ['ユーザーを削除できませんでした。'] } }, status: :unprocessable_entity
         end
