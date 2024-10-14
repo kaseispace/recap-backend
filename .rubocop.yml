@@ -51,3 +51,8 @@ Metrics/PerceivedComplexity:
 # 循環的複雑度チェック
 Metrics/CyclomaticComplexity:
   Max: 10
+
+# specは除外
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
