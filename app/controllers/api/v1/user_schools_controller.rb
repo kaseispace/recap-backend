@@ -1,6 +1,7 @@
 module Api
   module V1
     class UserSchoolsController < ApplicationController
+      before_action :payload_uid, only: %i[index create]
       before_action :set_user, only: %i[index create]
 
       def index
@@ -21,8 +22,12 @@ module Api
 
       private
 
+      def payload_uid
+        @payload['user_id']
+      end
+
       def set_user
-        @user = User.find_by(uid: @payload['user_id'])
+        @user = User.find_by(uid: payload_uid)
       end
 
       def user_school_params
