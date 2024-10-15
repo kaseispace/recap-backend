@@ -1,6 +1,7 @@
 module Api
   module V1
     class CoursesController < ApplicationController
+      before_action :payload_uid, only: %i[index show joined_users create update destroy]
       before_action :set_user, only: %i[index show joined_users create update destroy]
 
       def index
@@ -60,9 +61,12 @@ module Api
 
       private
 
-      # ユーザーを探すメソッド
+      def payload_uid
+        @payload['user_id']
+      end
+
       def set_user
-        @user = User.find_by(uid: @payload['user_id'])
+        @user = User.find_by(uid: payload_uid)
       end
 
       def course_params
