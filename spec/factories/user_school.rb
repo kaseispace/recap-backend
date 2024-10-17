@@ -3,8 +3,8 @@ FactoryBot.define do
     association :user
     association :school
 
-    factory :user_school_with_second_user do
-      association :user, factory: :second_user
+    factory :user_school_with_teacher do
+      association :user, factory: :teacher
       association :school
     end
   end
