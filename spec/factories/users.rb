@@ -6,13 +6,13 @@ FactoryBot.define do
     created_at { Time.zone.now }
     updated_at { Time.zone.now }
 
-    factory :second_user do
+    factory :teacher do
       uid { 'mock_uid' }
       name { '佐藤次郎' }
       user_type { 1 }
     end
 
-    factory :student_user do
+    factory :student do
       uid { 'mock_student_uid' }
       name { '田中一郎' }
       user_type { 0 }
