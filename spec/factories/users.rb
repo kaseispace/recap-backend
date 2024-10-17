@@ -11,5 +11,11 @@ FactoryBot.define do
       name { '佐藤次郎' }
       user_type { 1 }
     end
+
+    factory :student_user do
+      uid { 'mock_student_uid' }
+      name { '田中一郎' }
+      user_type { 0 }
+    end
   end
 end
