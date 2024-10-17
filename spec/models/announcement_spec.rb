@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Announcement, type: :model do
-  let(:second_user) { FactoryBot.create(:second_user) }
+  let(:teacher) { FactoryBot.create(:teacher) }
   let(:school) { FactoryBot.create(:school) }
-  let(:course) { FactoryBot.create(:course, created_by: second_user, school:) }
+  let(:course) { FactoryBot.create(:course, created_by: teacher, school:) }
   let(:announcement) { FactoryBot.create(:announcement, course:) }
 
   describe 'バリデーションチェック' do

@@ -1,23 +1,23 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::CoursesController, type: :controller do
-  let!(:second_user) { FactoryBot.create(:second_user) }
+  let!(:teacher) { FactoryBot.create(:teacher) }
   let!(:school) { FactoryBot.create(:school) }
-  let!(:course) { FactoryBot.create(:course, created_by: second_user, school:) }
-  let!(:secondary_course) { FactoryBot.create(:secondary_course, created_by: second_user, school:) }
+  let!(:course) { FactoryBot.create(:course, created_by: teacher, school:) }
+  let!(:secondary_course) { FactoryBot.create(:secondary_course, created_by: teacher, school:) }
 
   describe 'GET /api/v1/courses' do
     context 'ユーザーが認証されている場合' do
       include AuthenticationHelper
 
-      it '授業一覧の取得に成功する' do
+      it '授業一覧の取得に成功する（ステータスコード200）' do
         get :index
         expect(response).to have_http_status(:success)
       end
     end
 
     context 'ユーザーが認証されていない場合' do
-      it 'ステータスコード401が返される' do
+      it '授業一覧の取得に失敗する（ステータスコード401）' do
         get :index
         expect(response).to have_http_status(:unauthorized)
       end
@@ -33,12 +33,12 @@ RSpec.describe Api::V1::CoursesController, type: :controller do
     context 'ユーザーが認証されている場合' do
       include AuthenticationHelper
 
-      it '指定した授業の取得に成功する' do
+      it '指定した授業の取得に成功する（ステータスコード200）' do
         get :show, params: @valid_params
         expect(response).to have_http_status(:success)
       end
 
-      it '存在しない授業IDでリクエストすると空のオブジェクトを返す' do
+      it '一致する授業がない場合、空のオブジェクトを返す（ステータスコード200）' do
         get :show, params: @invalid_params
         expect(response).to have_http_status(:success)
         json_response = response.parsed_body
@@ -47,7 +47,7 @@ RSpec.describe Api::V1::CoursesController, type: :controller do
     end
 
     context 'ユーザーが認証されていない場合' do
-      it 'ステータスコード401が返される' do
+      it '自邸した授業の取得に失敗する（ステータスコード401）' do
         get :show, params: @valid_params
         expect(response).to have_http_status(:unauthorized)
       end
@@ -58,11 +58,11 @@ RSpec.describe Api::V1::CoursesController, type: :controller do
 
   describe 'POST /api/v1/courses' do
     before do
-      @valid_params = { course: { name: 'コンピュータサイエンス基礎', teacher_name: second_user.name, day_of_week: '火曜日',
+      @valid_params = { course: { name: 'コンピュータサイエンス基礎', teacher_name: teacher.name, day_of_week: '火曜日',
                                   course_time: '4限', school_id: school.id } }
-      @invalid_params_duplicate_name =  { course: { name: 'コンピュータサイエンス入門', teacher_name: second_user.name,
+      @invalid_params_duplicate_name =  { course: { name: 'コンピュータサイエンス入門', teacher_name: teacher.name,
                                                     day_of_week: '火曜日', course_time: '4限', school_id: school.id } }
-      @invalid_params_empty_name = { course: { name: '', teacher_name: second_user.name, day_of_week: '火曜日',
+      @invalid_params_empty_name = { course: { name: '', teacher_name: teacher.name, day_of_week: '火曜日',
                                                course_time: '4限', school_id: school.id } }
     end
 
@@ -70,10 +70,11 @@ RSpec.describe Api::V1::CoursesController, type: :controller do
       include AuthenticationHelper
 
       context '有効なパラメータ' do
-        it '授業の作成に成功する' do
+        it '授業の作成に成功する（ステータスコード200）' do
           expect do
             post :create, params: @valid_params
           end.to change(Course, :count).by(1)
+          expect(response).to have_http_status(:success)
         end
       end
 
@@ -91,7 +92,7 @@ RSpec.describe Api::V1::CoursesController, type: :controller do
     end
 
     context 'ユーザーが認証されていない場合' do
-      it 'ステータスコード401が返される' do
+      it '授業の作成に失敗する（ステータスコード401）' do
         get :create, params: @valid_params
         expect(response).to have_http_status(:unauthorized)
       end
@@ -118,7 +119,7 @@ RSpec.describe Api::V1::CoursesController, type: :controller do
       end
 
       context '無効なパラメータ' do
-        it '存在しない授業IDの更新に失敗する（ステータスコード404）' do
+        it '一致する授業がない場合、更新に失敗する（ステータスコード404）' do
           patch :update, params: @invalid_params_nonexistent_uuid
           expect(response).to have_http_status(:not_found)
         end
@@ -131,7 +132,7 @@ RSpec.describe Api::V1::CoursesController, type: :controller do
     end
 
     context 'ユーザーが認証されていない場合' do
-      it '授業の更新が認証なしで失敗する（ステータスコード401）' do
+      it '授業の更新に失敗する（ステータスコード401）' do
         patch :update, params: @valid_params
         expect(response).to have_http_status(:unauthorized)
       end
@@ -157,7 +158,7 @@ RSpec.describe Api::V1::CoursesController, type: :controller do
       end
 
       context '無効なパラメータ' do
-        it '存在しない授業IDの削除に失敗する（ステータスコード404）' do
+        it '一致する授業がない場合、削除に失敗する（ステータスコード404）' do
           delete :destroy, params: @invalid_params
           expect(response).to have_http_status(:not_found)
         end
@@ -165,7 +166,7 @@ RSpec.describe Api::V1::CoursesController, type: :controller do
     end
 
     context 'ユーザーが認証されていない場合' do
-      it '授業の削除が認証なしで失敗する（ステータスコード401）' do
+      it '授業の削除に失敗する（ステータスコード401）' do
         delete :destroy, params: @valid_params
         expect(response).to have_http_status(:unauthorized)
       end

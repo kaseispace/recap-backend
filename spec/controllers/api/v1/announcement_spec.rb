@@ -1,11 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::AnnouncementsController, type: :controller do
-  let!(:second_user) { FactoryBot.create(:second_user) }
-  let!(:student_user) { FactoryBot.create(:student_user) }
+  let!(:teacher) { FactoryBot.create(:teacher) }
+  let!(:student) { FactoryBot.create(:student) }
   let!(:school) { FactoryBot.create(:school) }
-  let!(:course) { FactoryBot.create(:course, created_by: second_user, school:) }
-  let!(:secondary_course) { FactoryBot.create(:secondary_course, created_by: second_user, school:) }
+  let!(:course) { FactoryBot.create(:course, created_by: teacher, school:) }
+  let!(:secondary_course) { FactoryBot.create(:secondary_course, created_by: teacher, school:) }
   let!(:announcement) { FactoryBot.create(:announcement, course:) }
 
   describe 'GET /api/v1/announcements/teacher_announcements' do
@@ -105,7 +105,7 @@ RSpec.describe Api::V1::AnnouncementsController, type: :controller do
       end
 
       context '無効なパラメータ' do
-        it '存在しないお知らせIDの更新に失敗する（ステータスコード404）' do
+        it '一致するお知らせがない場合、更新に失敗する（ステータスコード404）' do
           patch :update, params: @invalid_params_nonexistent_id
           expect(response).to have_http_status(:not_found)
         end
@@ -145,7 +145,7 @@ RSpec.describe Api::V1::AnnouncementsController, type: :controller do
       end
 
       context '無効なパラメータ' do
-        it '存在しないお知らせIDの削除に失敗する（ステータスコード404）' do
+        it '一致するお知らせがない場合、削除に失敗する（ステータスコード404）' do
           delete :destroy, params: @invalid_params_nonexistent_id
           expect(response).to have_http_status(:not_found)
         end
