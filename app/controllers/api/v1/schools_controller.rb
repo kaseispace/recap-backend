@@ -12,8 +12,6 @@ module Api
       # 特定の学校
       def show
         school = School.find_by(id: params[:id])
-        return render json: { error: { messages: ['学校が存在しませんでした。'] } }, status: :not_found unless school
-
         render json: school
       end
     end
