@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :course do
-    association :created_by, factory: :second_user
+    association :created_by, factory: :teacher
     association :school
     name { 'コンピュータサイエンス入門' }
     teacher_name { '佐藤次郎' }
