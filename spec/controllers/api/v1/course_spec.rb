@@ -4,7 +4,7 @@ RSpec.describe Api::V1::CoursesController, type: :controller do
   let!(:teacher) { FactoryBot.create(:teacher) }
   let!(:school) { FactoryBot.create(:school) }
   let!(:course) { FactoryBot.create(:course, created_by: teacher, school:) }
-  let!(:secondary_course) { FactoryBot.create(:secondary_course, created_by: teacher, school:) }
+  let!(:second_course) { FactoryBot.create(:second_course, created_by: teacher, school:) }
 
   describe 'GET /api/v1/courses' do
     context 'ユーザーが認証されている場合' do

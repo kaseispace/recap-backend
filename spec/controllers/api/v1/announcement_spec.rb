@@ -5,13 +5,13 @@ RSpec.describe Api::V1::AnnouncementsController, type: :controller do
   let!(:student) { FactoryBot.create(:student) }
   let!(:school) { FactoryBot.create(:school) }
   let!(:course) { FactoryBot.create(:course, created_by: teacher, school:) }
-  let!(:secondary_course) { FactoryBot.create(:secondary_course, created_by: teacher, school:) }
+  let!(:second_course) { FactoryBot.create(:second_course, created_by: teacher, school:) }
   let!(:announcement) { FactoryBot.create(:announcement, course:) }
 
   describe 'GET /api/v1/announcements/teacher_announcements' do
     before do
       @valid_params = { uuid: course.uuid }
-      @valid_no_match_params = { uuid: secondary_course.uuid }
+      @valid_no_match_params = { uuid: second_course.uuid }
       @invalid_params = { uuid: 9999 }
     end
 

@@ -7,7 +7,7 @@ RSpec.describe Api::V1::PromptsController, type: :controller do
   let!(:school) { FactoryBot.create(:school) }
   let!(:user_course) { FactoryBot.create(:user_course, user: student, course:) }
   let!(:course) { FactoryBot.create(:course, created_by: teacher, school:) }
-  let!(:secondary_course) { FactoryBot.create(:secondary_course, created_by: teacher, school:) }
+  let!(:second_course) { FactoryBot.create(:second_course, created_by: teacher, school:) }
   let!(:third_course) { FactoryBot.create(:third_course, created_by: second_teacher, school:) }
   let!(:prompt) { FactoryBot.create(:prompt, course:) }
   let!(:second_prompt) { FactoryBot.create(:second_prompt, course:) }
@@ -16,7 +16,7 @@ RSpec.describe Api::V1::PromptsController, type: :controller do
   describe 'GET /api/v1/prompts/teacher_prompts' do
     before do
       @valid_params = { uuid: course.uuid }
-      @valid_no_match_params = { uuid: secondary_course.uuid }
+      @valid_no_match_params = { uuid: second_course.uuid }
       @invalid_params = { uuid: 9999 }
     end
 
@@ -45,18 +45,18 @@ RSpec.describe Api::V1::PromptsController, type: :controller do
       end
     end
 
-    # context 'ユーザーが認証されていない場合' do
-    #   it 'お知らせ一覧の取得に失敗する（ステータスコード401）' do
-    #     get :teacher_announcements, params: @valid_params
-    #     expect(response).to have_http_status(:unauthorized)
-    #   end
-    # end
+    context 'ユーザーが認証されていない場合' do
+      it 'お知らせ一覧の取得に失敗する（ステータスコード401）' do
+        get :teacher_prompts, params: @valid_params
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
   end
 
   describe 'GET /api/v1/prompts/student_prompt' do
     before do
       @valid_params = { uuid: course.uuid, scenario: 'student' }
-      @valid_no_match_params = { uuid: secondary_course.uuid, scenario: 'student' }
+      @valid_no_match_params = { uuid: second_course.uuid, scenario: 'student' }
       @invalid_params = { uuid: 9999, scenario: 'student' }
     end
 

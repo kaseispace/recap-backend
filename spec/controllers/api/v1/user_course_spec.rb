@@ -5,7 +5,7 @@ RSpec.describe Api::V1::UserCoursesController, type: :controller do
   let!(:student) { FactoryBot.create(:student) }
   let!(:school) { FactoryBot.create(:school) }
   let!(:course) { FactoryBot.create(:course, created_by: teacher, school:) }
-  let!(:secondary_course) { FactoryBot.create(:secondary_course, created_by: teacher, school:) }
+  let!(:second_course) { FactoryBot.create(:second_course, created_by: teacher, school:) }
   let!(:user_course) { FactoryBot.create(:user_course, user: student, course:) }
 
   describe 'GET /api/v1/user_courses' do
@@ -58,7 +58,7 @@ RSpec.describe Api::V1::UserCoursesController, type: :controller do
 
   describe 'POST /api/v1/user_courses' do
     before do
-      @valid_params = { school_id: school.id, course_code: secondary_course.course_code }
+      @valid_params = { school_id: school.id, course_code: second_course.course_code }
       @invalid_params_nonexistent_course_code = { school_id: school.id, course_code: '4f9G7zX' }
       @invalid_params_already_enrolled = { school_id: school.id, course_code: course.course_code }
     end
