@@ -22,9 +22,7 @@ class OpenaiFeedbackGeneratorService
       }
     )
 
-    unless response.key?('choices') && response['choices'].any?
-      raise OpenAIError.new('予期しないレスポンスが返されました。', :unprocessable_entity)
-    end
+    raise OpenAIError.new('予期しないレスポンスが返されました。', :unprocessable_entity) unless response.key?('choices') && response['choices'].any?
 
     response.dig('choices', 0, 'message', 'content')
   rescue Faraday::ClientError, Faraday::ServerError => e
