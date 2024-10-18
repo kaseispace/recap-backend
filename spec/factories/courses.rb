@@ -11,7 +11,7 @@ FactoryBot.define do
     created_at { Time.zone.now }
     updated_at { Time.zone.now }
 
-    factory :secondary_course do
+    factory :second_course do
       name { 'ネットワークセキュリティ基礎' }
       teacher_name { '佐藤次郎' }
       day_of_week { '金曜日' }
