@@ -56,3 +56,7 @@ Metrics/CyclomaticComplexity:
 Metrics/BlockLength:
   Exclude:
     - "spec/**/*"
+
+# 1行あたりの文字数
+Layout/LineLength:
+  Max: 130
