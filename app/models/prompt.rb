@@ -27,6 +27,6 @@ class Prompt < ApplicationRecord
   end
 
   def as_json(options = {})
-    super(options.merge(include: :prompt_questions))
+    super(options.merge(include: { prompt_questions: { only: %i[id content] } }))
   end
 end
