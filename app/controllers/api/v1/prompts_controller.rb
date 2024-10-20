@@ -74,10 +74,20 @@ module Api
                         status: :forbidden
         end
 
-        if prompt.update(prompt_params)
-          render json: @prompt
-        else
-          render json: { error: { messages: ['プロンプトの編集に失敗しました。'] } }, status: :unprocessable_entity
+        begin
+          Prompt.transaction do
+            raise ActiveRecord::Rollback unless prompt.update(prompt_params)
+
+            params[:prompt][:prompt_questions_attributes]&.each do |question_params|
+              if !question_params[:id] && !prompt.prompt_questions.exists?(content: question_params[:content])
+                prompt.prompt_questions.create!(content: question_params[:content])
+              end
+            end
+          end
+
+          render json: prompt
+        rescue ActiveRecord::RecordInvalid => e
+          render json: { error: { messages: ['プロンプトの編集に失敗しました。', e.message] } }, status: :unprocessable_entity
         end
       end
 
