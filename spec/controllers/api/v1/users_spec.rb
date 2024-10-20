@@ -38,7 +38,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       include AuthenticationHelper
 
       context '有効なパラメータ' do
-        it 'ユーザーの削除に成功する（ステータスコード200）' do
+        it 'ユーザーの削除に成功する（ステータスコード204）' do
           expect do
             delete :destroy, params: @valid_params
           end.to change(User, :count).by(-1)

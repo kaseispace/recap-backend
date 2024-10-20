@@ -107,7 +107,7 @@ RSpec.describe Api::V1::UserCoursesController, type: :controller do
       include AuthenticationHelper
 
       context '有効なパラメータ' do
-        it '授業の退出に成功する（ステータスコード200）' do
+        it '授業の退出に成功する（ステータスコード204）' do
           expect do
             delete :destroy, params: @valid_params
           end.to change(UserCourse, :count).by(-1)

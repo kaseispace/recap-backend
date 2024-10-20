@@ -136,7 +136,7 @@ RSpec.describe Api::V1::AnnouncementsController, type: :controller do
       include AuthenticationHelper
 
       context '有効なパラメータ' do
-        it 'お知らせの削除に成功する（ステータスコード200）' do
+        it 'お知らせの削除に成功する（ステータスコード204）' do
           expect do
             delete :destroy, params: @valid_params
           end.to change(Announcement, :count).by(-1)

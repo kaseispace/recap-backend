@@ -264,7 +264,7 @@ RSpec.describe Api::V1::PromptsController, type: :controller do
       include AuthenticationHelper
 
       context '有効なパラメータ' do
-        it 'プロンプトの削除に成功する（ステータスコード200）' do
+        it 'プロンプトの削除に成功する（ステータスコード204）' do
           prompt_id_before_deletion = prompt.id
           prompt_questions_ids_before_deletion = prompt.prompt_questions.pluck(:id)
 
