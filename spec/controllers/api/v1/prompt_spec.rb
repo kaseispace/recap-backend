@@ -189,6 +189,8 @@ RSpec.describe Api::V1::PromptsController, type: :controller do
                                                     prompt: { prompt_questions_attributes: [{
                                                       id: prompt.prompt_questions.first.id, _destroy: true
                                                     }] } }
+      @valid_params_for_additional_question = { id: prompt.id,
+                                                prompt: { prompt_questions_attributes: [{ content: 'その他' }] } }
       @invalid_params_nonexistent_id = { id: 9999, prompt: { title: '今日の授業の振り返り' } }
       @invalid_params_different_creator = { id: prompt.id, prompt: { title: '今日の授業の振り返り' }, scenario: 'student' }
     end
@@ -220,6 +222,13 @@ RSpec.describe Api::V1::PromptsController, type: :controller do
           prompt.reload
           expect(prompt.prompt_questions.count).to eq(question_count_before_update - 1)
           expect(prompt.prompt_questions.where(id: first_question_id_before_update)).to be_empty
+        end
+
+        it 'プロンプトに新しい質問を追加して成功する（ステータスコード200）' do
+          patch :update, params: @valid_params_for_additional_question
+          expect(response).to have_http_status(:success)
+          prompt.reload
+          expect(prompt.prompt_questions.fourth.content).to eq('その他')
         end
       end
 
