@@ -4,6 +4,8 @@ RSpec.describe Api::V1::AnnouncementsController, type: :controller do
   let!(:teacher) { FactoryBot.create(:teacher) }
   let!(:student) { FactoryBot.create(:student) }
   let!(:school) { FactoryBot.create(:school) }
+  let!(:user_course) { FactoryBot.create(:user_course, user: student, course:) }
+  let!(:second_user_course) { FactoryBot.create(:second_user_course, user: student, course: second_course) }
   let!(:course) { FactoryBot.create(:course, created_by: teacher, school:) }
   let!(:second_course) { FactoryBot.create(:second_course, created_by: teacher, school:) }
   let!(:announcement) { FactoryBot.create(:announcement, course:) }
@@ -48,7 +50,45 @@ RSpec.describe Api::V1::AnnouncementsController, type: :controller do
     end
   end
 
-  #   GET /api/v1/announcements/student_announcements
+  describe 'GET /api/v1/announcements/student_announcements' do
+    before do
+      @valid_params = { uuid: course.uuid, scenario: 'student' }
+      @valid_no_match_params = { uuid: second_course.uuid, scenario: 'student' }
+      @invalid_params = { uuid: 9999, scenario: 'student' }
+    end
+
+    context 'ユーザーが認証されている場合' do
+      include AuthenticationHelper
+
+      context '有効なパラメータ' do
+        it 'お知らせ一覧の取得に成功する（ステータスコード200）' do
+          get :student_announcements, params: @valid_params
+          expect(response).to have_http_status(:success)
+        end
+
+        it '一致するお知らせがない場合、空の配列を返す（ステータスコード200）' do
+          get :student_announcements, params: @valid_no_match_params
+          expect(response).to have_http_status(:success)
+          json_response = response.parsed_body
+          expect(json_response).to eq([])
+        end
+      end
+
+      context '無効なパラメータ' do
+        it '無効な授業IDでお知らせの取得に失敗する（ステータスコード404）' do
+          get :student_announcements, params: @invalid_params
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+
+    context 'ユーザーが認証されていない場合' do
+      it 'お知らせ一覧の取得に失敗する（ステータスコード401）' do
+        get :student_announcements, params: @valid_params
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
 
   describe 'POST /api/v1/announcements' do
     before do
