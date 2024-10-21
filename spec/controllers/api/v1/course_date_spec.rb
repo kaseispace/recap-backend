@@ -93,7 +93,7 @@ RSpec.describe Api::V1::CourseDatesController, type: :controller do
     end
   end
 
-  describe 'PATCH /api/v1/course_dates/reflection_status' do
+  describe 'PATCH /api/v1/course_dates/:id/reflection_status' do
     before do
       @valid_params = { id: course_date.id }
       @invalid_params_nonexistent_id = { id: 9999 }

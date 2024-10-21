@@ -94,7 +94,7 @@ RSpec.describe Api::V1::PromptsController, type: :controller do
     end
   end
 
-  describe 'PATCH /api/v1/prompts/activate_prompt' do
+  describe 'PATCH /api/v1/prompts/:id/activate_prompt' do
     before do
       @valid_params = { id: prompt.id }
       @invalid_params_nonexistent_id = { id: 9999 }
