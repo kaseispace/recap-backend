@@ -2,7 +2,9 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::CoursesController, type: :controller do
   let!(:teacher) { FactoryBot.create(:teacher) }
+  let!(:student) { FactoryBot.create(:student) }
   let!(:school) { FactoryBot.create(:school) }
+  let!(:user_course) { FactoryBot.create(:user_course, user: student, course:) }
   let!(:course) { FactoryBot.create(:course, created_by: teacher, school:) }
   let!(:second_course) { FactoryBot.create(:second_course, created_by: teacher, school:) }
 
@@ -47,14 +49,52 @@ RSpec.describe Api::V1::CoursesController, type: :controller do
     end
 
     context 'ユーザーが認証されていない場合' do
-      it '自邸した授業の取得に失敗する（ステータスコード401）' do
+      it '指定した授業の取得に失敗する（ステータスコード401）' do
         get :show, params: @valid_params
         expect(response).to have_http_status(:unauthorized)
       end
     end
   end
 
-  # GET /api/v1/courses/:uuid/joined_users
+  describe 'GET /api/v1/courses/:uuid/joined_users' do
+    before do
+      @valid_params = { uuid: course.uuid }
+      @valid_no_match_params = { uuid: second_course.uuid }
+      @invalid_params = { uuid: 9999 }
+    end
+
+    context 'ユーザーが認証されている場合' do
+      include AuthenticationHelper
+
+      context '有効なパラメータ' do
+        it '参加者一覧の取得に成功する（ステータスコード200）' do
+          get :joined_users, params: @valid_params
+          expect(response).to have_http_status(:success)
+        end
+
+        it '参加者がいない場合、空の配列を返す（ステータスコード200）' do
+          get :joined_users, params: @valid_no_match_params
+          expect(response).to have_http_status(:success)
+          json_response = response.parsed_body
+          expect(json_response).to eq([])
+        end
+      end
+
+      context '無効なパラメータ' do
+        it '無効な授業IDで参加者の取得に失敗する（ステータスコード404）' do
+          get :joined_users, params: @invalid_params
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+
+    context 'ユーザーが認証されていない場合' do
+      it '参加者一覧の取得に失敗する（ステータスコード401）' do
+        get :joined_users, params: @valid_params
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
 
   describe 'POST /api/v1/courses' do
     before do
