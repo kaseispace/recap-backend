@@ -31,6 +31,14 @@ module AuthenticationHelper
           'mock_uid'
         end
       end
+      allow_any_instance_of(Api::V1::CourseDatesController).to receive(:payload_uid) do |controller|
+        case controller.params[:scenario]
+        when 'student'
+          'mock_student_uid'
+        else
+          'mock_uid'
+        end
+      end
     end
   end
 end
