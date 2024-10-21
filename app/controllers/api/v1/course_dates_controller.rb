@@ -1,37 +1,37 @@
 module Api
   module V1
     class CourseDatesController < ApplicationController
+      before_action :payload_uid,
+                    only: %i[teacher_course_dates student_course_dates reflection_status create update destroy]
       before_action :set_user,
                     only: %i[teacher_course_dates student_course_dates reflection_status create update destroy]
 
       # 振り返り履歴で表示するタイトル用
       def teacher_course_dates
-        course = Course.find_by(created_by_id: @user.id, uuid: params[:uuid])
-        if course
-          render json: course.course_dates
-        else
-          render json: { error: { messages: ['授業日が登録されていません。'] } }, status: :not_found
-        end
+        course = Course.includes(:course_dates).find_by(created_by_id: @user.id, uuid: params[:uuid])
+        return render json: { error: { messages: ['あなたが作成したコースが見つかりませんでした。コースIDを確認してください。'] } }, status: :not_found unless course
+
+        render json: course.course_dates
       end
 
       def student_course_dates
         user_course = UserCourse.joins(:course).find_by(user_id: @user.id, 'courses.uuid' => params[:uuid])
-        if user_course
-          course_dates = CourseDate.where(course_id: user_course.course_id)
-          render json: course_dates
-        else
-          render json: { error: { messages: ['あなたが所属するコースが見つかりませんでした。コースIDを確認してください。'] } }, status: :not_found
+        unless user_course
+          return render json: { error: { messages: ['あなたが所属するコースが見つかりませんでした。コースIDを確認してください。'] } },
+                        status: :not_found
         end
+
+        course_dates = CourseDate.where(course_id: user_course.course_id)
+        render json: course_dates
       end
 
       # 振り返りの有無
       def reflection_status
-        course_date = CourseDate.find_by(id: params[:id])
+        course_date = CourseDate.includes(:course).find_by(id: params[:id])
         return render json: { error: { messages: ['授業日が存在しませんでした。'] } }, status: :not_found unless course_date
 
-        course = Course.find_by(id: course_date.course_id, created_by_id: @user.id)
-        unless course
-          return render json: { error: { messages: ['コースの作成者でないため、振り返りのステータスを編集できません。'] } },
+        unless course_date.course.created_by_id == @user.id
+          return render json: { error: { messages: ['あなたは授業の作成者ではないので振り返りのステータスを更新できません。'] } },
                         status: :forbidden
         end
 
@@ -45,7 +45,7 @@ module Api
       def create
         course = Course.find_by(uuid: params[:uuid], created_by_id: @user.id)
         unless course
-          render json: { error: { messages: ['あなたは授業の作成者ではないので授業日を登録できません'] } }, status: :forbidden
+          render json: { error: { messages: ['あなたは授業の作成者ではないので授業日を登録できません。'] } }, status: :forbidden
           return
         end
 
@@ -61,11 +61,13 @@ module Api
       end
 
       def update
-        course_date = CourseDate.find_by(id: params[:id])
+        course_date = CourseDate.includes(:course).find_by(id: params[:id])
         return render json: { error: { messages: ['授業日が存在しませんでした。'] } }, status: :not_found unless course_date
 
-        course = Course.find_by(id: course_date.course_id, created_by_id: @user.id)
-        return render json: { error: { messages: ['コースの作成者でないため、授業日を編集できません。'] } }, status: :forbidden unless course
+        unless course_date.course.created_by_id == @user.id
+          return render json: { error: { messages: ['あなたは授業の作成者ではないので授業日の更新はできません。'] } },
+                        status: :forbidden
+        end
 
         if course_date.update(course_date_params)
           render json: course_date
@@ -81,8 +83,10 @@ module Api
         course_date = CourseDate.find_by(id: params[:id])
         return render json: { error: { messages: ['授業日が存在しませんでした。'] } }, status: :not_found unless course_date
 
-        course = Course.find_by(id: course_date.course_id, created_by_id: @user.id)
-        return render json: { error: { messages: ['コースの作成者でないため、授業日を削除できません。'] } }, status: :forbidden unless course
+        unless course_date.course.created_by_id == @user.id
+          return render json: { error: { messages: ['あなたは授業の作成者ではないので授業日を削除できません。'] } },
+                        status: :forbidden
+        end
 
         if course_date.destroy
           head :no_content
@@ -93,9 +97,12 @@ module Api
 
       private
 
-      # ユーザーを探すメソッド
+      def payload_uid
+        @payload['user_id']
+      end
+
       def set_user
-        @user = User.find_by(uid: @payload['user_id'])
+        @user = User.find_by(uid: payload_uid)
       end
 
       def course_date_params
