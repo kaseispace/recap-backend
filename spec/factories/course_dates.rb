@@ -11,5 +11,11 @@ FactoryBot.define do
       course_number { '第2回' }
       course_date { '2024/4/8' }
     end
+
+    factory :third_course_date do
+      association :course, factory: :second_course
+      course_number { '第1回' }
+      course_date { '2024/4/3' }
+    end
   end
 end
