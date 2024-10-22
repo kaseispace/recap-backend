@@ -1,17 +1,18 @@
 module Api
   module V1
     class FeedbacksController < ApplicationController
+      before_action :payload_uid, only: %i[student_feedbacks create]
       before_action :set_user, only: %i[student_feedbacks create]
 
       def student_feedbacks
-        user_course = UserCourse.joins(:course).find_by(user_id: @user.id,
-                                                        'courses.uuid' => student_feedbacks_params[:uuid])
-        if user_course
-          feedbacks = Feedback.where(user_id: @user.id, course_id: user_course.course_id)
-          render json: feedbacks
-        else
-          render json: { error: { messages: ['あなたが所属するコースが見つかりませんでした。コースIDを確認してください。'] } }, status: :not_found
+        user_course = UserCourse.joins(:course).find_by(user_id: @user.id, 'courses.uuid' => params[:uuid])
+        unless user_course
+          return render json: { error: { messages: ['あなたが所属するコースが見つかりませんでした。コースIDを確認してください。'] } },
+                        status: :not_found
         end
+
+        feedbacks = Feedback.where(user_id: @user.id, course_id: user_course.course_id)
+        render json: feedbacks
       end
 
       def create
@@ -40,13 +41,12 @@ module Api
 
       private
 
-      # ユーザーを探すメソッド
-      def set_user
-        @user = User.find_by(uid: @payload['user_id'])
+      def payload_uid
+        @payload['user_id']
       end
 
-      def student_feedbacks_params
-        params.permit(:uuid)
+      def set_user
+        @user = User.find_by(uid: payload_uid)
       end
 
       def feedback_params
