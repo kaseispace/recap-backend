@@ -1,22 +1,24 @@
 module Api
   module V1
     class ReflectionsController < ApplicationController
+      before_action :payload_uid, only: %i[student_reflections check_reflection_on_date create update]
       before_action :set_user, only: %i[student_reflections check_reflection_on_date create update]
 
       def student_reflections
         user_course = UserCourse.joins(:course).find_by(user_id: @user.id, 'courses.uuid' => params[:uuid])
-        if user_course
-          reflections = Reflection.where(user_id: @user.id,
-                                         course_id: user_course.course_id).includes(:course_date).order(:created_at)
-
-          reflections_with_course_dates = reflections.group_by(&:course_date).map do |course_date, grouped_reflections|
-            course_date.as_json(only: %i[id course_id course_number
-                                         course_date]).merge(reflections: grouped_reflections)
-          end
-          render json: reflections_with_course_dates
-        else
-          render json: { error: { messages: ['あなたが所属するコースが見つかりませんでした。コースIDを確認してください。'] } }, status: :not_found
+        unless user_course
+          return render json: { error: { messages: ['あなたが所属するコースが見つかりませんでした。コースIDを確認してください。'] } },
+                        status: :not_found
         end
+
+        reflections = Reflection.where(user_id: @user.id,
+                                       course_id: user_course.course_id).includes(:course_date).order(:created_at)
+
+        reflections_with_course_dates = reflections.group_by(&:course_date).map do |course_date, grouped_reflections|
+          course_date.as_json(only: %i[id course_id course_number
+                                       course_date]).merge(reflections: grouped_reflections)
+        end
+        render json: reflections_with_course_dates
       end
 
       def all_student_reflection_status
@@ -77,13 +79,14 @@ module Api
 
       def check_reflection_on_date
         course = Course.find_by(id: check_reflection_params[:id], created_by_id: @user.id)
-        if course
-          reflection = Reflection.find_by(course_id: course.id,
-                                          course_date_id: check_reflection_params[:course_date_id])
-          render json: reflection.present?
-        else
-          render json: { error: { messages: ['あなたは授業の作成者ではありません。'] } }, status: :forbidden
+        unless course
+          return render json: { error: { messages: ['あなたが作成したコースが見つかりませんでした。コースIDを確認してください。'] } },
+                        status: :forbidden
         end
+
+        reflection = Reflection.find_by(course_id: course.id,
+                                        course_date_id: check_reflection_params[:course_date_id])
+        render json: reflection.present?
       end
 
       def create
@@ -92,22 +95,24 @@ module Api
 
         begin
           Reflection.transaction do
-            new_reflections = Reflection.create!(reflection_params.map do |reflection|
-                                                   reflection.merge(
-                                                     user_id: @user.id,
-                                                     course_id: user_course.course_id,
-                                                     course_date_id: params[:course_date_id]
-                                                   )
-                                                 end)
+            new_reflections = reflection_params[:reflections].map do |reflection|
+              Reflection.create!(
+                reflection.merge(
+                  user_id: @user.id,
+                  course_id: user_course.course_id,
+                  course_date_id: reflection_params[:course_date_id]
+                )
+              )
+            end
 
             reflections_with_course_dates = new_reflections.group_by(&:course_date).map do |course_date, reflections|
-              course_date.as_json(only: %i[course_id course_number
-                                           course_date]).merge(reflections:)
+              course_date.as_json(only: %i[course_id course_number course_date]).merge(reflections:)
             end
+
             render json: reflections_with_course_dates
           end
-        rescue ActiveRecord::RecordInvalid => e
-          render json: { error: { messages: ["データの保存に失敗しました： #{e.message}"] } }, status: :unprocessable_entity
+        rescue ActiveRecord::RecordInvalid
+          render json: { error: { messages: ['振り返りを登録できませんでした。'] } }, status: :unprocessable_entity
         end
       end
 
@@ -118,35 +123,30 @@ module Api
         if reflection.update(update_reflection_params)
           render json: reflection
         else
-          render json: { error: { messages: reflection.errors.full_messages } }, status: :unprocessable_entity
+          render json: { error: { messages: ['振り返りの更新に失敗しました。'] } }, status: :unprocessable_entity
         end
       end
 
       private
 
-      # ユーザーを探すメソッド
+      def payload_uid
+        @payload['user_id']
+      end
+
       def set_user
-        @user = User.find_by(uid: @payload['user_id'])
-      end
-
-      def reflection_params
-        params.require(:course_date_id)
-        params.require(:reflections).map do |reflection|
-          reflection.permit(:message_type, :message, :message_time)
-        end
-      end
-
-      def update_reflection_params
-        params.permit(:message)
-      end
-
-      def reflection_history_params
-        # reflectionキーのみを許可
-        params.require(:reflection_history)
+        @user = User.find_by(uid: payload_uid)
       end
 
       def check_reflection_params
         params.permit(:id, :course_date_id)
+      end
+
+      def reflection_params
+        params.require(:reflection).permit(:course_date_id, reflections: %i[message_type message message_time])
+      end
+
+      def update_reflection_params
+        params.permit(:message)
       end
     end
   end
