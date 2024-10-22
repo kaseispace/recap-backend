@@ -47,6 +47,7 @@ module AuthenticationHelper
           'mock_uid'
         end
       end
+      allow_any_instance_of(Api::V1::FeedbacksController).to receive(:payload_uid).and_return('mock_student_uid')
     end
   end
 end
