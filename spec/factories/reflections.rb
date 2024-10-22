@@ -5,7 +5,7 @@ FactoryBot.define do
     association :course_date
     message { 'こんにちは！' }
     message_type { 'bot' }
-    message_time { '0' }
+    message_time { 0 }
     created_at { Time.zone.now }
     updated_at { Time.zone.now }
   end
