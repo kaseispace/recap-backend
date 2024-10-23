@@ -55,8 +55,6 @@ jobs:
 
   rubocop:
     runs-on: ubuntu-latest
-    env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     defaults:
       run:
         working-directory: .
