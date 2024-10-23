@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      CORS_ORIGINS: ${{ secrets.CORS_ORIGINS }}
     defaults:
       run:
         working-directory: .
