@@ -2,7 +2,7 @@ class Course < ApplicationRecord
   before_create :set_uuid
   before_create :generate_unique_course_code
 
-  belongs_to :created_by, class_name: 'User'
+  belongs_to :created_by, class_name: 'User', inverse_of: :created_courses
   belongs_to :school
   has_many :user_courses, dependent: :destroy
   has_many :users, through: :user_courses
