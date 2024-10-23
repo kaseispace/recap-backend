@@ -3,7 +3,7 @@ class User < ApplicationRecord
   has_many :schools, through: :user_schools
   has_many :user_courses, dependent: :destroy
   has_many :courses, through: :user_courses
-  has_many :created_courses, class_name: 'Course', foreign_key: 'created_by_id', dependent: :destroy
+  has_many :created_courses, class_name: 'Course', foreign_key: 'created_by_id', dependent: :destroy, inverse_of: :created_by
   has_many :reflections, dependent: :destroy
   has_many :feedbacks, dependent: :destroy
 
