@@ -5,8 +5,8 @@ module Api
       before_action :set_user, only: %i[index create]
 
       def index
-        school = @user.schools.first
-        render json:  { user: @user.as_json(only: %i[name user_type]), school: }
+        schools = @user&.schools || []
+        render json:  { user: @user.as_json(only: %i[name user_type]), school: schools.first }
       end
 
       def create
