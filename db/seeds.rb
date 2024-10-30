@@ -30,3 +30,8 @@ end
     School.create!(model_params)
   end
 end
+
+sample_params = {
+  name: 'フルスタック大学'
+}
+School.create!(sample_params)
