@@ -1,8 +1,8 @@
 module Api
   module V1
     class ReflectionsController < ApplicationController
-      before_action :payload_uid, only: %i[student_reflections check_reflection_on_date create update]
-      before_action :set_user, only: %i[student_reflections check_reflection_on_date create update]
+      before_action :payload_uid, only: %i[student_reflections check_reflection_on_date shared_reflections create update]
+      before_action :set_user, only: %i[student_reflections check_reflection_on_date shared_reflections create update]
 
       def student_reflections
         user_course = UserCourse.joins(:course).find_by(user_id: @user.id, 'courses.uuid' => params[:uuid])
@@ -87,6 +87,38 @@ module Api
         reflection = Reflection.find_by(course_id: course.id,
                                         course_date_id: check_reflection_params[:course_date_id])
         render json: reflection.present?
+      end
+
+      def shared_reflections
+        user_course = UserCourse.joins(:course).find_by(user_id: @user.id, 'courses.uuid' => params[:uuid])
+
+        unless user_course
+          return render json: { error: { messages: ['あなたが所属するコースが見つかりませんでした。コースIDを確認してください。'] } },
+                        status: :not_found
+        end
+
+        users = user_course.course.users.includes(:reflections).where.not(id: @user.id)
+        course_dates = CourseDate.where(course_id: user_course.course_id, is_reflection: true)
+
+        reflections_by_date = course_dates.map do |course_date|
+          users_reflections = users.map do |user|
+            reflections = user.reflections.where(course_date_id: course_date.id).order(:created_at)
+            next if reflections.empty?
+
+            {
+              user_id: user.id,
+              name: user.name,
+              reflections: reflections.map(&:attributes)
+            }
+          end.compact
+
+          course_date_hash = course_date.attributes
+          course_date_hash['users_reflections'] = users_reflections
+          course_date_hash
+        end
+        render json: reflections_by_date
+      rescue StandardError
+        render json: { error: { messages: ['予期しないエラーが発生しました。'] } }, status: :unprocessable_entity
       end
 
       def create
