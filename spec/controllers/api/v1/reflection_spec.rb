@@ -159,6 +159,38 @@ RSpec.describe Api::V1::ReflectionsController, type: :controller do
     end
   end
 
+  describe 'GET /api/v1/reflections/shared_reflections' do
+    before do
+      @valid_params = { uuid: course.uuid, scenario: 'student' }
+      @invalid_params = { uuid: 9999, scenario: 'student' }
+    end
+
+    context 'ユーザーが認証されている場合' do
+      include AuthenticationHelper
+
+      context '有効なパラメータ' do
+        it '振り返り一覧の取得に成功する（ステータスコード200）' do
+          get :shared_reflections, params: @valid_params
+          expect(response).to have_http_status(:success)
+        end
+      end
+
+      context '無効なパラメータ' do
+        it '無効な授業IDで振り返りの取得に失敗する（ステータスコード404）' do
+          get :shared_reflections, params: @invalid_params
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+
+    context 'ユーザーが認証されていない場合' do
+      it '振り返り一覧の取得に失敗する（ステータスコード401）' do
+        get :shared_reflections, params: @valid_params
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
+
   describe 'POST /api/v1/reflections' do
     before do
       @valid_params = { uuid: course.uuid,
