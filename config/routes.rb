@@ -49,6 +49,7 @@ Rails.application.routes.draw do
           get 'all_student_reflection_status'
           get 'all_student_reflections'
           get 'check_reflection_on_date'
+          get 'shared_reflections'
         end
       end
 
