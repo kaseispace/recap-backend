@@ -12,7 +12,7 @@ module Api
                         status: :not_found
         end
 
-        announcements = Announcement.where(course_id: course.id).order(updated_at: :desc)
+        announcements = Announcement.where(course_id: course.id).order(created_at: :desc)
         render json: announcements
       end
 
@@ -24,7 +24,7 @@ module Api
                         status: :not_found
         end
 
-        announcements = Announcement.where(course_id: user_course.course_id).order(updated_at: :desc)
+        announcements = Announcement.where(course_id: user_course.course_id).order(created_at: :desc)
         render json: announcements.as_json(only: %i[content created_at updated_at])
       end
 
