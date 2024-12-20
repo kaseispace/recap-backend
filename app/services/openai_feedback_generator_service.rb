@@ -55,10 +55,6 @@ class OpenaiFeedbackGeneratorService
   private
 
   def generate_prompt(query)
-    "以下のようなチャットとの会話があります。
-        これはチャットを通して授業内で学習者が振り返りを行った結果です。
-        この学習者の振り返りに対して、学習のアドバイスなどを150文字以内でフィードバックしてください。
-
-        #{query}"
+    "#{ENV.fetch('CHAT_PROMPT')}\n\n#{query}"
   end
 end
