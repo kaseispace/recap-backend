@@ -1,9 +1,6 @@
 module Api
   module V1
     class UsersController < ApplicationController
-      # skip_before_action :authenticate, only: [:index]
-
-      # 新規ユーザー登録
       def create
         user = User.new(user_params)
         user.uid = payload_uid
@@ -27,7 +24,6 @@ module Api
 
       private
 
-      # payloadのuidを返すメソッド
       def payload_uid
         @payload['user_id']
       end

@@ -2,61 +2,42 @@ require:
   - rubocop-rails
 
 AllCops:
-  # 新ルールを有効化
   NewCops: enable
-  # 提案メッセージの非表示
   SuggestExtensions: false
-  # 何のルールに引っかかったか表示する
   DisplayCopNames: true
-  # 除外するディレクトリ（自動生成されるファイル）
   Exclude:
     - "vendor/**/*"
     - "db/**/*"
     - "config/**/*"
     - "bin/*"
 
-### ルールのカスタマイズ
-
-# クラスにコメントを残さなくても良い
 Style/Documentation:
   Enabled: false
 
-# 文字列のfreeze（Ruby3からは自動でfreezeされるので要らない）
 Style/FrozenStringLiteralComment:
   Enabled: false
-# デフォルトのシングルクォートを使うことにしたので、ダブルの所は修正される
-# Style/StringLiterals:
-#   Enabled: false
 
-# メソッドの複雑さチェック
 Metrics/AbcSize:
   Max: 40
 
-# メソッドの行数が多すぎないかチェック
 Metrics/MethodLength:
   Max: 30
 
-# クラスの行数をチェックを無効
 Metrics/ClassLength:
   Enabled: false
 
-# i18nのチェックを無効
 Rails/I18nLocaleTexts:
   Enabled: false
 
-# メソッド内の複雑性チェック
 Metrics/PerceivedComplexity:
   Max: 10
 
-# 循環的複雑度チェック
 Metrics/CyclomaticComplexity:
   Max: 10
 
-# specは除外
 Metrics/BlockLength:
   Exclude:
     - "spec/**/*"
 
-# 1行あたりの文字数
 Layout/LineLength:
   Max: 130

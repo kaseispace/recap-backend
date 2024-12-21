@@ -20,13 +20,12 @@ module Api
                                                         'courses.uuid' => feedback_params[:uuid])
         return render json: { error: { messages: ['あなたの所属情報が見つかりませんでした。'] } }, status: :not_found unless user_course
 
-        # 改行する
         formatted_reflection_history = feedback_params[:reflection_history].join("\n")
 
         begin
           service = OpenaiFeedbackGeneratorService.new(formatted_reflection_history)
           generated_text = service.call
-          # フィードバックが返されたら、保存する処理をこの後に行う
+
           feedback = Feedback.new(user_id: @user.id, course_id: user_course.course_id,
                                   course_date_id: feedback_params[:course_date_id], comment: generated_text)
           if feedback.save
