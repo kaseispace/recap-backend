@@ -13,7 +13,8 @@ https://www.recaplearning.com/
 
 ### 紹介記事
 
-https://qiita.com/kaseispace/items/e0c6c39baaebfbfc5de8
+[【未経験・独学】教員と学生のための振り返り学習プラットフォームを開発しました【Nuxt / Rails / Tailwind CSS / Firebase Authentication / GitHub Actions】](https://qiita.com/kaseispace/items/e0c6c39baaebfbfc5de8)
+
 
 ## 機能紹介 - 教員ページ
 
