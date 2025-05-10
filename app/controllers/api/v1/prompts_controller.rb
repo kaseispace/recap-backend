@@ -13,7 +13,7 @@ module Api
                         status: :not_found
         end
 
-        prompts = Prompt.includes(:prompt_questions).where(course_id: course.id)
+        prompts = Prompt.includes(:prompt_questions).where(course_id: course.id).order(created_at: :desc)
         render json: prompts, include: :prompt_questions
       end
 
