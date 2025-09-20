@@ -15,7 +15,6 @@ https://www.recaplearning.com/
 
 [【未経験・独学】教員と学生のための振り返り学習プラットフォームを開発しました【Nuxt / Rails / Tailwind CSS / Firebase Authentication / GitHub Actions】](https://qiita.com/kaseispace/items/e0c6c39baaebfbfc5de8)
 
-
 ## 機能紹介 - 教員ページ
 
 <table>
@@ -205,70 +204,279 @@ https://www.recaplearning.com/
   </tr>
 </table>
 
-## こだわりポイント
+## 使用技術
 
-### 付箋風カードによる振り返り共有
+| カテゴリ | 技術 | 
+| --- | --- |
+| フロントエンド | Vue 3.5.11 / Nuxt 3.13.2 / TypeScript 5.6.2 | 
+| バックエンド | Ruby 3.3.4 / Ruby on Rails 7.1.3（APIモード） |
+| データベース | PostgreSQL 16 |
+| 認証 | Firebase Authentication |
+| 環境構築 | Docker |
+| CI/CD | Github Actions |
+| インフラ | Vercel / Render |
+| UIライブラリ | Tailwind CSS |
+| 外部API | 学校コード検索 API / OpenAI API |
+| その他 | VueUse / Nuxt Icon / Nuxt Image / vue-chartjs / <br>Nuxt ESLint / Vitest / Nuxt Test Utils / Rubocop / RSpec |
 
-学生が記入した振り返りの内容を付箋風のカードに表示することで、クラスメートの振り返りを簡単に閲覧できるようにしています。
+## 技術選定の理由
+### フロントエンド
+フロントエンドには Vue.js と Nuxt3 を採用しました。React / Next.js も検討しましたが、初学者として継続的に学習・開発を進めるためには、学習コストが低く、直感的に理解しやすい技術が適切だと判断しました。
 
-このデザインには、教室で学生が各々の意見を付箋に書いて模造紙に貼り付け、共有するという情景をシステムに取り入れたいという思いを込めています。視覚的に振り返りを共有することで、他の学生の意見や考えを取り入れることができ、自分自身の学びを深める手助けとなります。
+Vue.js は JavaScript に近い記法で記述でき、コンポーネントベースの設計も自然に習得できました。さらに Nuxt3 を組み合わせることで、ルーティングやディレクトリ構成が自動化されており、設計の指針が明確なため、迷いなく機能追加や画面設計に集中できると考えました。
 
-![みんなの振り返り画像](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3954066/636cebf7-5527-dff8-6982-cff5b8a72fa3.png)
+特に Nuxt3 の以下の機能は、開発体験を大きく向上させました
 
-### 振り返りの記入状況の可視化
+- **自動ルーティング（pages ディレクトリ）**：直感的にページ構成を管理でき、ナビゲーションも柔軟に実装可能
 
-学生の振り返り状況を簡単に確認できるよう、記入済みの場合はチェックマーク、未記入の場合はバツ印や黄色の四角で表示しています。
-これにより、グラフとアイコンを使って直感的に情報を把握できるようにしました。
+- **Auto Import 機能**：useFetch や useState などを import なしで利用でき、コードの可読性と生産性が向上
 
-![振り返りの可視化グラフ](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3954066/161c6f51-fdc9-4bb3-270b-17ba8efe855e.png)
+- **TypeScript との親和性**：型安全にデータ受け渡しや状態管理を行え、バグの予防にもつながる
 
-## 使用技術一覧
 
-#### フロントエンド
+### バックエンド
+バックエンドには Ruby on Rails を採用しました。プログラミングを始めた当初、私は「Railsチュートリアル」を活用して学習を進めました。初心者向けに体系的な構成がされており、Webアプリ開発の流れを挫折せずに理解できたことから、最初に習得したフレームワークが Rails でした。
 
-- Vue 3.5.11
-- Nuxt 3.13.2
-- TypeScript 5.6.2
-- コード解析/フォーマッター：Nuxt ESLint
-- テストフレームワーク：Vitest / Nuxt Test Utils
-- UIライブラリ：Tailwind CSS
-- 主要パッケージ： VueUse / Nuxt Icon / Nuxt Image / vue-chartjs
+ポートフォリオ開発においても、すでに習熟していた技術を活用することで、学習コストを抑えながら設計・実装に集中できると判断しました。
 
-#### バックエンド
+### UI
+UI には Tailwind CSS を採用しました。最大の理由は、クラス名の命名に悩む必要がないことです。従来の CSS 設計では、構造や意味を考慮した命名が求められ、開発の負担になっていました。Tailwind CSS ではユーティリティクラスを直接記述できるため、命名の手間を省きながら、UI をスピーディに構築できると考えました。
 
-- Ruby 3.3.4
-- Ruby on Rails 7.1.3
-- コード解析/フォーマッター：Rubocop
-- テストフレームワーク：RSpec
+また、ユーティリティクラスだけでなく、`hover:` などの疑似クラスバリアントを容易に適用できる点や、ブレイクポイントを指定するだけでレスポンシブデザインを実現できる点も、開発効率を高める上で大きなメリットでした。
 
-#### インフラ
+### インフラ
+ポートフォリオのインフラ構成には、フロントエンドに Vercel、バックエンドに Render を採用しました。
 
-- Vercel (フロントエンド)
-- Render (バックエンド)
+Vercel は特別な設定をせずにゼロコンフィグで GitHub リポジトリと連携でき、リポジトリを選んでボタンを押すだけでデプロイ環境が整い、以降は push するだけで自動的に更新が反映される点が魅力でした。
 
-#### CI/CD
+また、GitHub Actions を組み合わせて Vitest や ESLint によるテスト・静的解析をデプロイ前に自動実行することで、開発効率と品質管理を両立させています。
 
-- Github Actions
-
-#### 環境構築
-
-- Docker
-
-#### 認証
-
-- Firebase Authentication
-
-#### API
-
-- 学校コード検索 API
-- OpenAI API
+バックエンドには、Rails チュートリアルで利用経験のある Render を選択し、慣れた環境でスムーズに API と PostgreSQL データベースの運用構成を整えることができました。
 
 ## 画面遷移図
 
 [Figma](https://www.figma.com/design/KDvVsfNRQkM56ZxVIV5VEr/ReCap-Design?node-id=189-2679&t=2H5lpZcVIpUr7ieO-1)
+
+![画面遷移図.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3954066/3c5b235e-f80f-41c2-9f0d-4664efc73b59.png)
 
 ## ER図
 ![ER図](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3954066/79290dda-a513-2b33-5694-1b5e00b33120.png)
 
 ## インフラ構成図
 ![インフラ構成図](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3954066/9a0aa7c3-ee96-8b68-9236-974bcf222673.png)
+
+## こだわった実装
+こだわった実装は以下になります。
+
+- **みんなの振り返り機能**
+- **振り返り登録機能**
+- **レスポンシブ対応**
+
+### みんなの振り返り機能
+「みんなの振り返り一覧」画面では、学生の振り返り内容を**付箋風のカード**として表示しています。 このUIは、教室で学生がそれぞれの意見を付箋に書いて、模造紙や黒板、ホワイトボードなどに貼り付けて共有するという**教育現場の情景を再現することを意図したもの**です。
+
+カードの背景色や角度をランダムに変えることで、**視覚的な多様性と楽しさ**を演出し、一覧画面にありがちな無機質さを避け、**温かみのある空間をつくることを目指しました**。 学生がクラスメートの振り返りを“眺めて回る”ような体験を促すことで、**他者の視点に触れ、自分の学びを深めるきっかけ**になるよう設計しています。
+
+![みんなの振り返り画像](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3954066/636cebf7-5527-dff8-6982-cff5b8a72fa3.png)
+
+#### 技術的な課題
+Tailwind CSS は、ビルド時に未使用のクラスを自動的に削除（パージ）する仕様があります。 そのため、**動的に組み立てたクラス名**は、静的解析では使用されていないと判断され、ビルド後に削除されてしまいます。 この結果、**背景色が正しく適用されない**という問題が発生しました。
+
+#### 解決アプローチ
+tailwind.config.tsにsafelistを設定することで、**使用する可能性のある色クラスを事前にすべて列挙して保持**しています。
+今回は、**17色 × 4パターン**の組み合わせで、**計68種類のクラス**をsafelistに登録しました。
+これにより、ランダムにクラスを指定しても、ビルド時に削除されることなく、**安定して背景色が適用される**ようになっています。
+
+#### Tailwind CSS の safelist 設定
+背景色のバリエーション（色 × 濃度）を関数でまとめて管理し、safelistに展開しています。このように関数化することで、**色の追加や削除が柔軟に行えるようになり、保守性が高まります**。
+```tailwind.config.ts
+function generateSafelist(color: string) {
+  return [
+    `bg-${color}-100`, `bg-${color}-200`, `bg-${color}-600/70`, `bg-${color}-100/70`
+  ]
+}
+
+module.exports = {
+  safelist: [
+    ...generateSafelist('red'),
+    ...generateSafelist('orange'),
+    ...generateSafelist('amber'),
+    ...generateSafelist('yellow'),
+    ...generateSafelist('lime'),
+    ...generateSafelist('green'),
+    ...generateSafelist('emerald'),
+    ...generateSafelist('teal'),
+    ...generateSafelist('cyan'),
+    ...generateSafelist('sky'),
+    ...generateSafelist('blue'),
+    ...generateSafelist('indigo'),
+    ...generateSafelist('violet'),
+    ...generateSafelist('purple'),
+    ...generateSafelist('fuchsia'),
+    ...generateSafelist('pink'),
+    ...generateSafelist('rose')
+  ]
+}
+```
+
+#### ランダム生成のロジック
+カード本体（付箋）とテープ部分の背景色をランダムに生成するためのComposableです。
+17色 × 2通りの濃度の組み合わせからランダムに選び、Tailwind CSS のクラス文字列を生成します。
+ロジックを**コンポーネントから切り出すことで、責務を分離**し、再利用やテストも容易にしました。
+
+```useGenerateRandomColor.ts
+export const useGenerateRandomColor = () => {
+  const cardBgColor = ref('')
+  const sealBgColor = ref('')
+  const rotationAngle = ref('')
+  const colorPalette = [
+    'red',
+    'orange',
+    'amber',
+    'yellow',
+    'lime',
+    'green',
+    'emerald',
+    'teal',
+    'cyan',
+    'sky',
+    'blue',
+    'indigo',
+    'violet',
+    'purple',
+    'fuchsia',
+    'pink',
+    'rose'
+  ]
+  const colorSaturationLevels = [
+    { cardSaturation: 100, sealSaturation: 600 },
+    { cardSaturation: 200, sealSaturation: 100 }
+  ]
+  const rotationAngles = [
+    '-rotate-[3deg]', '-rotate-[5deg]', '-rotate-[7deg]', '-rotate-[10deg]',
+    'rotate-[3deg]', 'rotate-[5deg]', 'rotate-[7deg]', 'rotate-[10deg]'
+  ]
+
+  const createRandomColor = () => {
+    const selectedColor = colorPalette[Math.floor(Math.random() * colorPalette.length)]
+    const selectedSaturation = colorSaturationLevels[Math.floor(Math.random() * colorSaturationLevels.length)]
+    rotationAngle.value = rotationAngles[Math.floor(Math.random() * rotationAngles.length)]
+
+    cardBgColor.value = `bg-${selectedColor}-${selectedSaturation.cardSaturation}`
+    sealBgColor.value = `bg-${selectedColor}-${selectedSaturation.sealSaturation}/70`
+  }
+
+  return { cardBgColor, sealBgColor, rotationAngle, createRandomColor }
+}
+```
+
+#### PostItコンポーネントでのランダムクラスの適用
+マウント時にランダム生成を呼び、得られたクラス文字列をそのまま `:class` へバインドしています。
+
+```PostIt.vue
+<script setup lang="ts">
+const { cardBgColor, sealBgColor, createRandomColor } = useGenerateRandomColor()
+
+onMounted(() => {
+  createRandomColor()
+})
+</script>
+
+<template>
+  <div>
+    <div
+      class="cursor-pointer duration-300 ease-in-out hover:scale-110"
+    >
+      <div
+        class="relative flex h-60 min-w-60 max-w-96 items-center justify-center text-gray-800"
+        :class="cardBgColor"
+      >
+        <div class="mx-6 my-12 line-clamp-[8] w-full">
+          <slot />
+        </div>
+
+        <div class="absolute bottom-[-5px] right-[7px] -z-10 h-1/2 w-[70%] rotate-[5deg] bg-[#d0d0d0] blur-sm" />
+        <div
+          class="absolute -top-3 left-1/2 h-8 w-20 -translate-x-1/2 rotate-3"
+          :class="sealBgColor"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+### 振り返り登録機能
+授業の振り返りを、ユーザーとシステム（bot）の会話形式で記録できる仕組みを実装しました。複数のメッセージを1つの振り返りとして登録できるようにすることで、学習の流れや思考の過程を自然に残せることを目的としました。
+
+フロントエンドからは以下のような形式でデータが送信されます。
+```sample_reflections.ts
+reflections: [
+  { message_type: "bot", message: "こんにちは！" },
+  { message_type: "bot", message: "振り返りを始めましょう！" },
+  { message_type: "bot", message: "今日の授業で新しく学んだことや印象に残った内容は何ですか？" },
+  { message_type: "user", message: "JavaScriptの条件分岐について学びました。if文の使い方が少しずつ分かってきました。" },
+  { message_type: "bot", message: "実際にコードを書いてみて、うまく動いた場面はありましたか？" },
+  { message_type: "user", message: "「もし〇〇なら〜」という処理を作って、ボタンを押すとメッセージが変わるようにできました。" }
+  { message_type: "bot", message: "次に挑戦してみたいことはありますか？" },
+  { message_type: "user", message: "次は複数の条件を組み合わせて、もっと複雑な分岐を作ってみたいです。" },
+  { message_type: "bot", message: "お疲れ様でした！" },
+]
+```
+
+#### 技術的な課題
+複数メッセージを1つの振り返りとして保存する必要がありましたが、1件でも保存に失敗すると会話の一部だけが欠けてしまい、学習履歴の整合性を欠く可能性がありました。
+
+#### 解決アプローチ
+Railsのトランザクションを用いて、すべての登録が成功した場合のみコミットされるように設計しました。失敗時にはロールバックしてエラーメッセージを返すことで、データの一貫性を担保しました。
+
+```reflections_controller.rb
+def create
+  user_course = UserCourse.joins(:course)
+                .find_by(user_id: @user.id, 'courses.uuid' => params[:uuid])
+  return render json: { error: { messages: ['あなたの所属情報が見つかりませんでした。'] } },
+                status: :not_found unless user_course
+
+  begin
+    Reflection.transaction do
+      new_reflections = reflection_params[:reflections].map do |reflection|
+        Reflection.create!(
+          reflection.merge(
+            user_id: @user.id,
+            course_id: user_course.course_id,
+            course_date_id: reflection_params[:course_date_id]
+          )
+        )
+      end
+
+      reflections_with_course_dates = new_reflections.group_by(&:course_date).map do |course_date, reflections|
+        course_date.as_json(only: %i[course_id course_number course_date])
+                   .merge(reflections:)
+      end
+
+      render json: reflections_with_course_dates
+    end
+  rescue ActiveRecord::RecordInvalid
+    render json: { error: { messages: ['振り返りを登録できませんでした。'] } },
+           status: :unprocessable_entity
+  end
+end
+```
+
+### レスポンシブ対応
+「ReCap」では、どのデバイスでも快適に操作できるよう、**各画面のUIを細部まで丁寧に作り込みました**。 
+
+画面サイズや操作環境に応じて、**カードの配置・余白・コンポーネントの並び方などを一つひとつ調整し、妥協なく仕上げています**。
+
+その一例として、授業一覧画面では、Tailwind CSS の `grid` レイアウトをベースに、`grid-cols-1`〜`grid-cols-4` をブレイクポイント（`xs`, `md`, `lg`）ごとに指定し、**スマートフォンでは1列、PCでは最大4列**で表示されるよう設計しました。また、`gap-x` と `gap-y` を使い、**カード間の余白も画面幅に応じて最適化**しています。
+
+さらに、**ナビゲーションの構成にも工夫を加え**、PCでは常時表示されるサイドバーを、スマートフォンではハンバーガーメニューに切り替えることで、**限られた画面スペースを有効に使いながら、操作性を損なわない設計**を実現しました。
+
+この構成により、**狭い画面では縦スクロールで見やすく、広い画面では一覧性を高める**ことができました。
+
+| スマートフォン | PC |
+| :---: | :---: |
+| ![スマホ版レイアウト.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3954066/6abd8347-d481-4734-b2ad-c09d2a46c1b7.png) | ![PC版レイアウト.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3954066/f2556194-9fcc-438f-aa92-01b4c9e3f16f.png) | 
+
+
+他の画面でも、ボタン配置・フォントサイズ・余白・コンポーネントの並び方などを細かく調整し、ユーザーがどの環境でも違和感なく使えるUIを目指して設計しています。
