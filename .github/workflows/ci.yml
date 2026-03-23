@@ -76,3 +76,13 @@ jobs:
 
       - name: Run rubocop
         run: bundle exec rubocop
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [rspec, rubocop]
+    if: success()
+    steps:
+      - name: Trigger Render Deploy
+        run: |
+          echo "Triggering Render deployment..."
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
