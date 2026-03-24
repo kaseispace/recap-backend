@@ -5,7 +5,7 @@ module Api
       before_action :set_user, only: %i[index show create destroy]
 
       def index
-        courses = @user.courses
+        courses = @user.courses.order(:created_at)
         render json: courses.as_json(only: %i[name teacher_name day_of_week course_time uuid])
       end
 
