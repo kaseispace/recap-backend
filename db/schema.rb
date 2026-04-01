@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_23_051500) do
+ActiveRecord::Schema[7.1].define(version: 2026_04_01_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -60,6 +60,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_23_051500) do
     t.datetime "updated_at", null: false
     t.index ["course_date_id"], name: "index_feedbacks_on_course_date_id"
     t.index ["course_id"], name: "index_feedbacks_on_course_id"
+    t.index ["user_id", "course_id"], name: "index_feedbacks_on_user_id_and_course_id"
     t.index ["user_id"], name: "index_feedbacks_on_user_id"
   end
 
@@ -77,6 +78,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_23_051500) do
     t.boolean "active", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["course_id", "active"], name: "index_prompts_on_course_id_and_active"
     t.index ["course_id"], name: "index_prompts_on_course_id"
   end
 
@@ -90,7 +92,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_23_051500) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_date_id"], name: "index_reflections_on_course_date_id"
+    t.index ["course_id", "course_date_id"], name: "index_reflections_on_course_id_and_course_date_id"
     t.index ["course_id"], name: "index_reflections_on_course_id"
+    t.index ["user_id", "course_id"], name: "index_reflections_on_user_id_and_course_id"
     t.index ["user_id"], name: "index_reflections_on_user_id"
   end
 
@@ -107,6 +111,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_23_051500) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_id"], name: "index_user_courses_on_course_id"
+    t.index ["user_id", "course_id"], name: "index_user_courses_on_user_id_and_course_id", unique: true
     t.index ["user_id"], name: "index_user_courses_on_user_id"
   end
 
