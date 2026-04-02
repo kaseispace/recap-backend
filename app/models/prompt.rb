@@ -16,9 +16,7 @@ class Prompt < ApplicationRecord
   def self.activate(prompt_id)
     prompt = find(prompt_id)
     transaction do
-      where(course_id: prompt.course_id, active: true).find_each do |record|
-        record.update!(active: false)
-      end
+      where(course_id: prompt.course_id, active: true).update_all(active: false) # rubocop:disable Rails/SkipsModelValidations
       prompt.update!(active: true)
     end
     true
