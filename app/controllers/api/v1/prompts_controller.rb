@@ -78,10 +78,11 @@ module Api
           Prompt.transaction do
             raise ActiveRecord::Rollback unless prompt.update(prompt_params)
 
+            existing_contents = prompt.prompt_questions.pluck(:content).to_set
             params[:prompt][:prompt_questions_attributes]&.each do |question_params|
-              if !question_params[:id] && !prompt.prompt_questions.exists?(content: question_params[:content])
-                prompt.prompt_questions.create!(content: question_params[:content])
-              end
+              next if question_params[:id] || existing_contents.include?(question_params[:content])
+
+              prompt.prompt_questions.create!(content: question_params[:content])
             end
           end
 
