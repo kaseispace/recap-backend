@@ -55,20 +55,10 @@ module Api
                         status: :not_found
         end
 
-        reflections_by_user_and_date = {}
-        course.course_dates.each do |course_date|
-          course_date.reflections.sort_by(&:created_at).each do |reflection|
-            (reflections_by_user_and_date[reflection.user_id] ||= {})[course_date] ||= []
-            reflections_by_user_and_date[reflection.user_id][course_date] << reflection
-          end
-        end
+        reflections_by_user_and_date = build_reflections_map(course.course_dates)
 
         reflection_dates_by_user = course.users.map do |user|
-          user_reflection_dates = (reflections_by_user_and_date[user.id] || {}).map do |date, reflections|
-            course_date_hash = date.attributes
-            course_date_hash['reflections'] = reflections
-            course_date_hash
-          end
+          user_reflection_dates = format_reflection_dates(reflections_by_user_and_date[user.id] || {})
           { 'user_id' => user.id, 'name' => user.name, 'user_reflections' => user_reflection_dates }
         end
         render json: reflection_dates_by_user
@@ -178,6 +168,25 @@ module Api
 
       def update_reflection_params
         params.permit(:message)
+      end
+
+      def build_reflections_map(course_dates)
+        result = {}
+        course_dates.each do |course_date|
+          course_date.reflections.sort_by(&:created_at).each do |reflection|
+            (result[reflection.user_id] ||= {})[course_date] ||= []
+            result[reflection.user_id][course_date] << reflection
+          end
+        end
+        result
+      end
+
+      def format_reflection_dates(reflections_by_date)
+        reflections_by_date.map do |date, reflections|
+          course_date_hash = date.attributes
+          course_date_hash['reflections'] = reflections
+          course_date_hash
+        end
       end
     end
   end
