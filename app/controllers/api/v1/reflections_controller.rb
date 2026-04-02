@@ -22,7 +22,7 @@ module Api
       end
 
       def all_student_reflection_status
-        course = Course.includes(course_dates: :reflections, users: :reflections).find_by(uuid: params[:uuid])
+        course = Course.includes(course_dates: { reflections: :user }, users: []).find_by(uuid: params[:uuid])
         unless course
           return render json: { error: { messages: ['あなたが所属するコースが見つかりませんでした。コースIDを確認してください。'] } },
                         status: :not_found
@@ -32,12 +32,11 @@ module Api
         course_dates = course.course_dates
 
         reflections_by_date = course_dates.map do |course_date|
+          reflections_by_user = course_date.reflections.group_by(&:user_id)
+
           users_reflections = users.map do |user|
-            reflections = user.reflections.select do |reflection|
-              reflection.course_date_id == course_date.id
-            end
             user_hash = user.slice('id', 'name')
-            user_hash['reflections'] = reflections.map(&:attributes).presence || []
+            user_hash['reflections'] = (reflections_by_user[user.id] || []).map(&:attributes)
             user_hash
           end
           course_date_hash = course_date.attributes
@@ -50,27 +49,27 @@ module Api
       end
 
       def all_student_reflections
-        course = Course.includes(users: { reflections: :course_date }).find_by(uuid: params[:uuid])
+        course = Course.includes(course_dates: { reflections: :user }, users: []).find_by(uuid: params[:uuid])
         unless course
           return render json: { error: { messages: ['あなたが所属するコースが見つかりませんでした。コースIDを確認してください。'] } },
                         status: :not_found
         end
 
-        users = course.users
+        reflections_by_user_and_date = {}
+        course.course_dates.each do |course_date|
+          course_date.reflections.sort_by(&:created_at).each do |reflection|
+            (reflections_by_user_and_date[reflection.user_id] ||= {})[course_date] ||= []
+            reflections_by_user_and_date[reflection.user_id][course_date] << reflection
+          end
+        end
 
-        reflection_dates_by_user = users.map do |user|
-          user_reflections = user.reflections.select do |reflection|
-            reflection.course_date.course_id == course.id
-          end.sort_by(&:created_at)
-
-          user_reflection_dates = user_reflections.group_by(&:course_date).map do |date, reflections|
+        reflection_dates_by_user = course.users.map do |user|
+          user_reflection_dates = (reflections_by_user_and_date[user.id] || {}).map do |date, reflections|
             course_date_hash = date.attributes
             course_date_hash['reflections'] = reflections
             course_date_hash
           end
-          user_hash = { 'user_id' => user.id, 'name' => user.name,
-                        'user_reflections' => user_reflection_dates }
-          user_hash
+          { 'user_id' => user.id, 'name' => user.name, 'user_reflections' => user_reflection_dates }
         end
         render json: reflection_dates_by_user
       rescue StandardError
